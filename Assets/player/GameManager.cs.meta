@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 1e37c4ea003aab34eb281d78117e749f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - unitPrefab: {fileID: 1000013090372502, guid: 5fc15d2f77afc1e419fd0ec57fc180ac,
+      type: 3}
+  - monkPrefab: {instanceID: 0}
+  - playerSpawnPoint: {instanceID: 0}
+  - enemySpawnPoint: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

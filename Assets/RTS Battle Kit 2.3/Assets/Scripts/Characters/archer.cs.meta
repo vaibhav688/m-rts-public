@@ -1,10 +1,12 @@
 fileFormatVersion: 2
 guid: 4c0634a2828db354a8554d514b39f0ab
-timeCreated: 1473861355
-licenseType: Store
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - arrow: {fileID: 1000011467470154, guid: aa37ba82e9371354b9606e1e872812b1, type: 3}
+  - arrowSpawner: {instanceID: 0}
+  - animationArrow: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

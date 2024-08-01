@@ -3,10 +3,13 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+
 public class Mobile : MonoBehaviour {
 	
 	//not visible in the inspector
 	private bool moveRight;
+
+	private Manager manager;
 	private bool moveLeft;
 	private bool moveUp;
 	private bool moveDown;
@@ -78,7 +81,7 @@ public class Mobile : MonoBehaviour {
 		}
 
 			//turn the buttons of when any of the menu's is active
-			if (!Manager.StartMenu.activeSelf && !Manager.victory && !Manager.gameOver && !Settings.settingsMenu.activeSelf) {
+			if (!Manager.StartMenu.activeSelf && !manager.victory && !manager.gameOver && !Settings.settingsMenu.activeSelf) {
 				buttons.SetActive(true);
 			}
 			else {

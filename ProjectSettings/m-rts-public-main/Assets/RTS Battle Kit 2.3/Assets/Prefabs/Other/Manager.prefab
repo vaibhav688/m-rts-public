@@ -1,0 +1,256 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &181632
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 457592}
+  - component: {fileID: 11429326}
+  - component: {fileID: 11497984}
+  - component: {fileID: 114000011283593036}
+  m_Layer: 0
+  m_Name: Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &457592
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181632}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000016292068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &11429326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 963738b1cb50887478c799f88002b2c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destroyCastle: 1
+  killEnemies: 0
+  timeSeconds: 0
+  fadespeed: 1
+  Minimap: {fileID: 0}
+  minimapZoomSlider: {fileID: 0}
+  fading: 0
+  retreatAudio: {fileID: 0}
+  fightAudio: {fileID: 0}
+--- !u!114 &11497984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 533d90e29456d3f42adaa7c8c12d934a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startGold: 100
+  startFood: 0
+  rectangleStyle:
+    m_Name: 
+    m_Normal:
+      m_Background: {fileID: 2800000, guid: e7776def12d5ba042bea75031c5c8896, type: 3}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Hover:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Active:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Focused:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnNormal:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnHover:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnActive:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnFocused:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Margin:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Padding:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Overflow:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Font: {fileID: 0}
+    m_FontSize: 0
+    m_FontStyle: 0
+    m_Alignment: 0
+    m_WordWrap: 0
+    m_RichText: 1
+    m_TextClipping: 0
+    m_ImagePosition: 0
+    m_ContentOffset: {x: 0, y: 0}
+    m_FixedWidth: 0
+    m_FixedHeight: 0
+    m_StretchWidth: 0
+    m_StretchHeight: 0
+  newUnitEffect: {fileID: 198000013048652682, guid: ec04ba7a85219da40bb6467c58688d48,
+    type: 3}
+  cursorTexture: {fileID: 2800000, guid: 4893eef7593015140b916e7e984603a1, type: 3}
+  cursorTexture1: {fileID: 2800000, guid: 85b5018d99b4fa145843008fbd3f310d, type: 3}
+  highlightSelectedButton: 1
+  buttonHighlight: {r: 0, g: 0, b: 0, a: 1}
+  button: {fileID: 1000013344647048, guid: e20a6615444750b47abb4f104a997987, type: 3}
+  bombLoadingSpeed: 0.03
+  BombRange: 20
+  bombExplosion: {fileID: 1000011575426814, guid: 3b62fd0e996220b46a28448c173ecbc9,
+    type: 3}
+  deselectKey: 120
+  mobileDragInput: 1
+  originalPreviewSize: 1
+  dragPreviewSize: 60
+  troops:
+  - deployableTroops: {fileID: 107952, guid: 6060a81b23b7e1a449bf4c757c483bc7, type: 3}
+    troopCosts: 30
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: 199696268d4ef1740942293bc9ee0dd6, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 197716, guid: 33403714bbcaf0e4cb0b20ae6f0351c6, type: 3}
+    troopCosts: 50
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: a7ae58a911305084ebd8631d48363cc8, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 1000013090372502, guid: 216d593297c0a8c4793d5570ee06d2e0,
+      type: 3}
+    troopCosts: 70
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: 1d60c38db66138f41a20dca006ee775a, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 115658, guid: f82cfa639f7d8f346885932d19596a28, type: 3}
+    troopCosts: 120
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: aea94ef32ac45024e85150e3d5651ee8, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 1000012766327544, guid: a10b952a51d16794d9fb984f931c0e50,
+      type: 3}
+    troopCosts: 20
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: 1b415e38d2d0ed9458eaa81f086312c0, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 1000012455546398, guid: 9e974aaed61dd5448ac516674b62c46d,
+      type: 3}
+    troopCosts: 300
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: 5e3c9d842b817d54ba5562af7eba83cb, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 1000013504902364, guid: 2c2b745aea4ebde4dbe9e70fac17e10d,
+      type: 3}
+    troopCosts: 100
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: f51aa867d062a4444817a7dfc0105106, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 1715281259719538, guid: b29d2ebcc665dce49afc5b165259670d,
+      type: 3}
+    troopCosts: 80
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: 07fb5231e23eccb4b80777a05e885def, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 1574180337108504, guid: ca92339025ff11a4fab89b41f4bbe3a9,
+      type: 3}
+    troopCosts: 150
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: 64afe6ed622916744926adb107d94c1a, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 1659471551193784, guid: a4369fc37b27239469d55daeb5f567e2,
+      type: 3}
+    troopCosts: 180
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: 281dd8d3a2e5d704faeaeb06c1a12429, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 1315480928862908, guid: 9366185b931be574a9b85225bcf4ff38,
+      type: 3}
+    troopCosts: 300
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: bfeea2711f97d244cb8588099000d946, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 1050059686362176, guid: 302c541b623d4054c948b43eec74b910,
+      type: 3}
+    troopCosts: 400
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: cd10d168c5e7d1d44917a2cfc57f19bd, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 1591023963780124, guid: 5c22eaddac6482d4b88423a3dcad2e4c,
+      type: 3}
+    troopCosts: 500
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: 80937a9a943b0054cb59fc0d4ea40779, type: 3}
+    button: {fileID: 0}
+  - deployableTroops: {fileID: 1994156573723890, guid: e18939183ae65ba4480b39346b623d02,
+      type: 3}
+    troopCosts: 300
+    foodCosts: 0
+    buttonImage: {fileID: 21300000, guid: 0efd2797a3115a14da239614da648694, type: 3}
+    button: {fileID: 0}
+--- !u!114 &114000011283593036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e30b29071c112274aabd141092ab01ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemies:
+  - {fileID: 1187676115651614, guid: 24e99646943252e41a48715147974c51, type: 3}
+  - {fileID: 113190, guid: 9afb68d73cf95f146b4af324d2c8b4ca, type: 3}
+  startEnemyCount: 5
+  spawnWait: 0.3
+  waveWait: 5
+  startWait: 1
+  extraEnemiesPerWave: 2
+  randomSpawnPositions: 1

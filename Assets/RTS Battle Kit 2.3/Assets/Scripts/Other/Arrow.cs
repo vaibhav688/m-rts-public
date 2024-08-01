@@ -1,31 +1,40 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class Arrow : MonoBehaviour {
-	
-	[HideInInspector]
-	public GameObject arrowOwner;
-	
-	private string archerTag;
-	
-	void Start(){
-		if(arrowOwner != null)
-			archerTag = arrowOwner.tag;
-		
-		//destroy arrow after 5 seconds
-		Destroy(gameObject, 5);
-	}
+public class Arrow : MonoBehaviour
+{
+    [HideInInspector]
+    public GameObject arrowOwner;
 
-	void OnTriggerEnter(Collider other){
-		//freeze arrow when it hits an enemy and parent it to the enemy to move with it
-		if((other.gameObject.tag == "Enemy" || other.gameObject.tag == "Knight") && other.gameObject.tag != archerTag){
-			GetComponent<Rigidbody>().velocity = Vector3.zero;
-			GetComponent<Rigidbody>().isKinematic = true;
-			transform.parent = other.gameObject.transform;
-		}
-		else if(other.gameObject.tag == "Battle ground"){
-			//destroy arrow when it hits the ground
-			Destroy(gameObject);	
-		}
-	}
+    private string archerTag;
+    public float damage = 10f;
+
+    void Start()
+    {
+        if (arrowOwner != null)
+        {
+            archerTag = arrowOwner.tag;
+        }
+
+        Destroy(gameObject, 5);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if ((other.gameObject.tag == "Enemy" || other.gameObject.tag == "Knight") && other.gameObject.tag != archerTag)
+        {
+            GetComponent<Rigidbody>().velocity = Vector3.zero;
+            GetComponent<Rigidbody>().isKinematic = true;
+            transform.parent = other.gameObject.transform;
+
+            Castle castle = other.gameObject.GetComponent<Castle>();
+            if (castle != null)
+            {
+                castle.lives -= damage;
+            }
+        }
+        else if (other.gameObject.tag == "Battle ground")
+        {
+            Destroy(gameObject);
+        }
+    }
 }

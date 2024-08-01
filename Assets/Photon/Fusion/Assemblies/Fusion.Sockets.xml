@@ -431,7 +431,7 @@
             List of public DNS Servers
             </summary>
         </member>
-        <member name="M:Fusion.Sockets.Stun.StunClient.QueryPublicAddress(Fusion.Sockets.NetPeer*,Fusion.Sockets.INetSocket,System.Net.Sockets.AddressFamily,System.Guid@)">
+        <member name="M:Fusion.Sockets.Stun.StunClient.QueryPublicAddress(Fusion.Sockets.NetPeer*,Fusion.Sockets.INetSocket,System.Net.Sockets.AddressFamily,System.Guid@,System.Boolean@)">
             <summary>
             Run a STUN Binding Request against the Public STUN Server in order to discover peer reflexive addresses
             </summary>
@@ -730,13 +730,12 @@
             </summary>
             <param name="serializer">Buffer to read from or write into the data of the Message</param>
         </member>
-        <member name="M:Fusion.Protocol.Message.CheckCompability(Fusion.Protocol.ProtocolMessageVersion,System.Version,System.Boolean)">
+        <member name="M:Fusion.Protocol.Message.CheckCompability(Fusion.Protocol.ProtocolMessageVersion,System.Version)">
             <summary>
             Check if this Message is compatible with target versions
             </summary>
             <param name="targetProtocolVersion">Target Protocol Message Version</param>
             <param name="pluginSerializationVersion">Target Fusion Serialization Version</param>
-            <param name="enableSerializationVersionCheck">Enable the Serialization Version Check</param>
             <returns>True if message is compatible with versions</returns>
         </member>
         <member name="T:Fusion.Protocol.Disconnect">
@@ -1143,7 +1142,7 @@
         </member>
         <member name="F:Fusion.Protocol.PhotonConstants.SERVER_ACTOR_ID">
             <summary>
-            Zero (0) means: if it should be the room itself (authorative event).
+            Zero (0) means: if it should be the room itself (authoritative event).
             
             <see cref="!:https://doc-api.photonengine.com/en/plugins/v4/interface_photon_1_1_hive_1_1_plugin_1_1_i_plugin_host.html#a756dbd7b16fac7b43cb153506a442a99"/>
             </summary>

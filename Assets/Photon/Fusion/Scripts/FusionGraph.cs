@@ -523,15 +523,16 @@ public class FusionGraph : FusionGraphBase {
     switch (CurrentPer) {
       case Stats.StatsPer.Second: {
           var oldestTimeRecord = data.GetSampleAtIndex(0).TimeValue;
-          var currentTime = (float)_fusionStats.Runner.Simulation.LatestServerState.Time;
-          var avg = sum / (currentTime - oldestTimeRecord);
+        var newestTickRecord = data.GetSampleAtIndex(data.Count - 1).TimeValue;
+        var avg = sum / (newestTickRecord - oldestTimeRecord);
           return avg;
         }
 
       case Stats.StatsPer.Tick: {
           var oldestTickRecord = data.GetSampleAtIndex(0).TickValue;
-          var currentTick = (float)_fusionStats.Runner.Simulation.LatestServerState.Tick;
-          var avg = sum / (currentTick - oldestTickRecord);
+        var newestTickRecord = data.GetSampleAtIndex(data.Count -1).TickValue;
+        //var   currentTick      = (float)_fusionStats.Runner.Simulation.LatestServerState.Tick;
+        var avg = sum / (newestTickRecord - oldestTickRecord);
           return avg;
         }
 

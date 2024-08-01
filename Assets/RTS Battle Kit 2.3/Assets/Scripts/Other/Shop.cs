@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class Shop : MonoBehaviour {
 	
 	public GameObject shopButton;
 	public GameObject buttonPanel;
 	public GameObject unlockButton;
 	public GameObject unitPrice;
+
+	private Manager managers;
 	public Text gemsLabel;
 	public Text unitNameLabel;
 	public Text damageLabel;
@@ -49,8 +52,8 @@ public class Shop : MonoBehaviour {
 		if(Time.timeScale > 0)
 			gems += Time.deltaTime * gemAmount;
 		
-		if(!assignedGems && (Manager.victory || Manager.gameOver)){
-			if(Manager.victory){
+		if(!assignedGems && (managers.victory || managers.gameOver)){
+			if(managers.victory){
 				addGems(gemsVictory);
 			}
 			else{

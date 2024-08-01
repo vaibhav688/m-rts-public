@@ -39,10 +39,57 @@ public class PlacementSystem : MonoBehaviour
 
     private void Start()
     {
-        StopPlacement();
-        _previewRenderer = _cellIndicator.GetComponentInChildren<Renderer>();
-        gridData = new GridData();
+        if (_showBuildingPlacementUI == null)
+        {
+            Debug.LogError("The _showBuildingPlacementUI is not assigned. Please assign it in the Inspector.");
+            return; // Stop further execution to avoid null reference errors
+        }
 
+        if (_cellIndicator == null)
+        {
+            Debug.LogError("The _cellIndicator is not assigned. Please assign it in the Inspector.");
+            return;
+        }
+
+        if (inputManager == null)
+        {
+            Debug.LogError("The inputManager is not assigned. Please assign it in the Inspector.");
+            return;
+        }
+
+        if (_grid == null)
+        {
+            Debug.LogError("The _grid is not assigned. Please assign it in the Inspector.");
+            return;
+        }
+
+        if (_databaseSO == null)
+        {
+            Debug.LogError("The _databaseSO is not assigned. Please assign it in the Inspector.");
+            return;
+        }
+
+        if (_showBuildingRemovalOrUpgradeUI == null)
+        {
+            Debug.LogError("The _showBuildingRemovalOrUpgradeUI is not assigned. Please assign it in the Inspector.");
+            return;
+        }
+
+        if (_buildingRectTransform == null)
+        {
+            Debug.LogError("The _buildingRectTransform is not assigned. Please assign it in the Inspector.");
+            return;
+        }
+
+        _previewRenderer = _cellIndicator.GetComponentInChildren<Renderer>();
+        if (_previewRenderer == null)
+        {
+            Debug.LogError("No Renderer found in _cellIndicator's children. Please make sure the Renderer component is present.");
+            return;
+        }
+
+        gridData = new GridData();
+        StopPlacement();
     }
 
     private void OnEnable()
@@ -56,7 +103,7 @@ public class PlacementSystem : MonoBehaviour
     private void GetClickedPosition(Vector3 itemToBePlacedPos)
     {
         PlacingTime = true;
-        Debug.Log("Item tobe placed" + itemToBePlacedPos);
+        Debug.Log("Item to be placed" + itemToBePlacedPos);
         _showBuildingPlacementUI.transform.position = new Vector3(itemToBePlacedPos.x, itemToBePlacedPos.y + 8f, itemToBePlacedPos.z);
         _showBuildingPlacementUI.SetActive(true);
         if (InputManager.Instance.IsPointerOverUI())
@@ -104,7 +151,6 @@ public class PlacementSystem : MonoBehaviour
         }
 
         StopPlacement();
-
     }
 
 
@@ -135,12 +181,17 @@ public class PlacementSystem : MonoBehaviour
 
     private void Update()
     {
+        if (inputManager == null || _grid == null || _previewRenderer == null)
+        {
+            Debug.LogError("One or more references are not assigned in Update.");
+            return;
+        }
+
         Vector3 mousePosition = inputManager.GetMapPosition();
-        Vector3Int gridPosition = _grid.WorldToCell(mousePosition); 
+        Vector3Int gridPosition = _grid.WorldToCell(mousePosition);
 
         bool canBePlaced = gridData.CanPlaceObjectAt(gridPosition);
         _previewRenderer.material.color = canBePlaced ? Color.green : Color.red;
-
 
         if ((!canBePlaced && !PlacingTime) || _previewRenderer.material.color == Color.red)
         {

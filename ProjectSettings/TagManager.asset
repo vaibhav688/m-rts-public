@@ -17,6 +17,9 @@ TagManager:
   - SpawnArea
   - Border
   - Ally Buildings
+  - Healer
+  - EnemyCastle
+  - Battle ground
   layers:
   - Default
   - TransparentFX

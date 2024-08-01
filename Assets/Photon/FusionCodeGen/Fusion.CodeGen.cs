@@ -963,12 +963,16 @@ namespace Fusion.CodeGen {
               var done = Nop();
               il.Append(Ldc_I4((int)RpcTargetStatus.Unreachable));
               il.Append(Bne_Un_S(done));
-              il.Append(Ldarg(rpcTargetParameter));
-              il.Append(Ldstr(rpc.ToString()));
-              il.Append(Call(asm.NetworkBehaviourUtils.GetMethod(nameof(NetworkBehaviourUtils.NotifyRpcTargetUnreachable))));
+
+              if (!returnsRpcInvokeInfo) {
+                il.Append(Ldarg(rpcTargetParameter));
+                il.Append(Ldstr(rpc.ToString()));
+                il.Append(Call(asm.NetworkBehaviourUtils.GetMethod(nameof(NetworkBehaviourUtils.NotifyRpcTargetUnreachable))));
+              }
+
               il.Append(Pop()); // pop the GetRpcTargetStatus
 
-              il.AppendMacro(ctx.SetRpcInvokeInfoStatus(invokeLocal, RpcLocalInvokeResult.TagetPlayerIsNotLocal));
+              il.AppendMacro(ctx.SetRpcInvokeInfoStatus(invokeLocal, RpcLocalInvokeResult.TargetPlayerIsNotLocal));
               il.AppendMacro(ctx.SetRpcInvokeInfoStatus(RpcSendCullResult.TargetPlayerUnreachable));
               il.Append(Br(ret));
 
@@ -983,13 +987,13 @@ namespace Fusion.CodeGen {
                 Log.Assert(targetedInvokeLocal == null);
                 targetedInvokeLocal = Nop();
                 il.Append(Beq(targetedInvokeLocal));
-                il.AppendMacro(ctx.SetRpcInvokeInfoStatus(true, RpcLocalInvokeResult.TagetPlayerIsNotLocal));
+                il.AppendMacro(ctx.SetRpcInvokeInfoStatus(true, RpcLocalInvokeResult.TargetPlayerIsNotLocal));
               } else {
                 // will never get called
                 var checkDone = Nop();
                 il.Append(Bne_Un_S(checkDone));
-
-                if (NetworkRunner.BuildType == NetworkRunner.BuildTypes.Debug) {
+                
+                if (!returnsRpcInvokeInfo && NetworkRunner.BuildType == NetworkRunner.BuildTypes.Debug) {
                   il.Append(Ldarg(rpcTargetParameter));
                   il.Append(Ldstr(rpc.ToString()));
                   il.Append(Call(asm.NetworkBehaviourUtils.GetMethod(nameof(NetworkBehaviourUtils.NotifyLocalTargetedRpcCulled))));
@@ -1012,12 +1016,14 @@ namespace Fusion.CodeGen {
             il.Append(And());
             il.Append(Brtrue_S(checkDone));
 
-            // source is not valid, notify
-            il.Append(Ldstr(rpc.ToString()));
-            il.Append(Ldarg_0());
-            il.Append(Ldfld(asm.NetworkedBehaviour.GetField(nameof(NetworkBehaviour.Object))));
-            il.Append(Ldc_I4(sources));
-            il.Append(Call(asm.NetworkBehaviourUtils.GetMethod(nameof(NetworkBehaviourUtils.NotifyLocalSimulationNotAllowedToSendRpc))));
+            if (!returnsRpcInvokeInfo) {
+              // source is not valid, notify
+              il.Append(Ldstr(rpc.ToString()));
+              il.Append(Ldarg_0());
+              il.Append(Ldfld(asm.NetworkedBehaviour.GetField(nameof(NetworkBehaviour.Object))));
+              il.Append(Ldc_I4(sources));
+              il.Append(Call(asm.NetworkBehaviourUtils.GetMethod(nameof(NetworkBehaviourUtils.NotifyLocalSimulationNotAllowedToSendRpc))));
+            }
 
             il.AppendMacro(ctx.SetRpcInvokeInfoStatus(invokeLocal, RpcLocalInvokeResult.InsufficientSourceAuthority));
             il.AppendMacro(ctx.SetRpcInvokeInfoStatus(RpcSendCullResult.InsufficientSourceAuthority));
@@ -1037,7 +1043,60 @@ namespace Fusion.CodeGen {
               }
             }
           }
+          
+          var messageSizeVar = ctx.CreateVariable(asm.Import<int>());
+          {
+            il.Append(Ldc_I4(RpcHeader.SIZE));
+            il.Append(Stloc(messageSizeVar));
 
+
+            for (int i = 0; i < rpc.Parameters.Count; ++i) {
+              var para = rpc.Parameters[i];
+
+              if (rpc.IsStatic && i == 0) {
+                Log.Assert(para.ParameterType.IsSame<NetworkRunner>());
+                continue;
+              }
+
+              if (IsInvokeOnlyParameter(para)) {
+                continue;
+              }
+
+              if (para == rpcTargetParameter) {
+                continue;
+              }
+
+              il.Append(Ldloc(messageSizeVar));
+
+              using (ctx.ValueGetter(il => il.Append(Ldarg(para)))) {
+                if (para.ParameterType.IsArray) {
+                  // do nothing
+                  EmitRpcArrayByteSize(il, ctx, para, para.ParameterType.GetElementTypeWithGenerics());
+                } else {
+                  TypeRegistry.EmitMaxByteCountWordAligned(para.ParameterType, il, ctx, para);
+                }
+              }
+
+              il.Append(Add());
+              il.Append(Stloc(messageSizeVar));
+            }
+          }
+          
+          // check the size
+          var sizeOk = Nop();
+          il.Append(Ldloc(messageSizeVar));
+          il.Append(Call(asm.SimulationMessage.GetMethod(nameof(SimulationMessage.CanAllocateUserPayload))));
+          il.Append(Brtrue_S(sizeOk));
+          il.AppendMacro(ctx.SetRpcInvokeInfoStatus(invokeLocal, RpcLocalInvokeResult.PayloadSizeExceeded));
+          il.AppendMacro(ctx.SetRpcInvokeInfoStatus(RpcSendCullResult.PayloadSizeExceeded));
+          if (!returnsRpcInvokeInfo) {
+            il.Append(Ldstr(rpc.ToString()));
+            il.Append(Ldloc(messageSizeVar));
+            il.Append(Call(asm.NetworkBehaviourUtils.GetMethod(nameof(NetworkBehaviourUtils.NotifyRpcPayloadSizeExceeded))));
+          }
+          il.Append(Br(ret));
+          il.Append(sizeOk);
+          
           // check if sending makes sense at all
           var afterSend = Nop();
 
@@ -1052,49 +1111,11 @@ namespace Fusion.CodeGen {
             il.Append(checkDone);
           }
 
-          var messageSizeVar = ctx.CreateVariable(asm.Import<int>());
-
           // create simulation message
-          
-          il.Append(Ldc_I4(RpcHeader.SIZE));
-          il.Append(Stloc(messageSizeVar));
-
-
-          for (int i = 0; i < rpc.Parameters.Count; ++i) {
-            var para = rpc.Parameters[i];
-
-            if (rpc.IsStatic && i == 0) {
-              Log.Assert(para.ParameterType.IsSame<NetworkRunner>());
-              continue;
-            }
-
-            if (IsInvokeOnlyParameter(para)) {
-              continue;
-            }
-            if (para == rpcTargetParameter) {
-              continue;
-            }
-
-            il.Append(Ldloc(messageSizeVar));
-
-            using (ctx.ValueGetter(il => il.Append(Ldarg(para)))) {
-              if (para.ParameterType.IsArray) {
-                // do nothing
-                EmitRpcArrayByteSize(il, ctx, para, para.ParameterType.GetElementTypeWithGenerics());
-              } else {
-                TypeRegistry.EmitMaxByteCountWordAligned(para.ParameterType, il, ctx, para);
-              }
-            }
-
-            il.Append(Add());
-            il.Append(Stloc(messageSizeVar));
-          }
-
           il.AppendMacro(ctx.LoadRunner());
           il.Append(Call(asm.NetworkRunner.GetProperty(nameof(NetworkRunner.Simulation))));
           il.Append(Ldloc(messageSizeVar));
-
-
+          
           il.Append(Call(asm.SimulationMessage.GetMethod(nameof(SimulationMessage.Allocate), 2)));
           il.Append(Stloc(message));
 
@@ -3062,7 +3083,7 @@ namespace Fusion.CodeGen {
 
   internal class ILWeaverAssemblyResolver : IAssemblyResolver {
     private List<string> _lookInDirectories;
-    private Dictionary<string, string> _assemblyNameToPath;
+    private Dictionary<string, List<string>> _assemblyNameToPath;
     private Dictionary<string, AssemblyDefinition> _resolvedAssemblies = new Dictionary<string, AssemblyDefinition>();
     private string _compiledAssemblyName;
     private ILWeaverLog _log;
@@ -3072,16 +3093,16 @@ namespace Fusion.CodeGen {
     public ILWeaverAssemblyResolver(ILWeaverLog log, string compiledAssemblyName, string[] references, string[] weavedAssemblies) {
       _log                  = log;
       _compiledAssemblyName = compiledAssemblyName;
-      _assemblyNameToPath   = new Dictionary<string, string>();
+      _assemblyNameToPath   = new Dictionary<string, List<string>>();
 
       foreach (var referencePath in references) {
         var assemblyName = Path.GetFileNameWithoutExtension(referencePath);
-        if (_assemblyNameToPath.TryGetValue(assemblyName, out var existingPath)) {
-          _log.Warn($"Assembly {assemblyName} (full path: {referencePath}) already referenced by {compiledAssemblyName} at {existingPath}");
-        } else {
-          _log.Debug($"Adding {assemblyName}->{referencePath}");
-          _assemblyNameToPath.Add(assemblyName, referencePath);
+        if (!_assemblyNameToPath.TryGetValue(assemblyName, out var existingPaths)) {
+          existingPaths = new List<string>();
+          _assemblyNameToPath.Add(assemblyName, existingPaths);
         }
+        _log.Debug($"Adding {assemblyName}->{referencePath}");
+        existingPaths.Add(referencePath);
       }
 
       _lookInDirectories = references.Select(x => Path.GetDirectoryName(x)).Distinct().ToList();
@@ -3123,15 +3144,20 @@ namespace Fusion.CodeGen {
     }
 
     private string GetAssemblyPath(AssemblyNameReference name) {
-      if (_assemblyNameToPath.TryGetValue(name.Name, out var path)) {
-        return path;
+      if (_assemblyNameToPath.TryGetValue(name.Name, out var paths)) {
+        _log.Assert(paths.Count > 0);
+        if (paths.Count > 1) {
+          _log.Warn($"Assembly {name.FullName} seems to be referenced multiple times: {string.Join(", ", paths)}. Using the first one.");
+          paths.RemoveRange(1, paths.Count - 1);
+        }
+        return paths[0];
       }
 
       // fallback for second-order references
       foreach (var parentDir in _lookInDirectories) {
         var fullPath = Path.Combine(parentDir, name.Name + ".dll");
         if (File.Exists(fullPath)) {
-          _assemblyNameToPath.Add(name.Name, fullPath);
+          _assemblyNameToPath.Add(name.Name, new List<string>() { fullPath });
           return fullPath;
         }
       }

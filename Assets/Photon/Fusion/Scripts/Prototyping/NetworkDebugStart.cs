@@ -222,7 +222,7 @@ public class NetworkDebugStart : Fusion.Behaviour {
 
     if (StartMode == StartModes.Automatic) {
       if (TryGetSceneRef(out var sceneRef)) {
-        StartCoroutine(StartWithClients(AutoStartAs, sceneRef, isMultiPeer ? AutoClients : (AutoStartAs == GameMode.Client || AutoStartAs == GameMode.AutoHostOrClient ? 1 : 0)));
+        StartCoroutine(StartWithClients(AutoStartAs, sceneRef, isMultiPeer ? AutoClients : (AutoStartAs == GameMode.Client || AutoStartAs == GameMode.Shared || AutoStartAs == GameMode.AutoHostOrClient) ? 1 : 0));
       }
     } else {
       if (TryGetComponent<NetworkDebugStartGUI>(out var _) == false) {

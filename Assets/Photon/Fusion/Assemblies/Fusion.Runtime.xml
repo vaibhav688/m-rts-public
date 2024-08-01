@@ -752,12 +752,13 @@
             Update and perform all pending actions related to the Photon Cloud communication
             </summary>
         </member>
-        <member name="M:Fusion.CloudServices.ConnectToCloud(Fusion.Photon.Realtime.AuthenticationValues,Fusion.Photon.Realtime.AppSettings)">
+        <member name="M:Fusion.CloudServices.ConnectToCloud(Fusion.Photon.Realtime.AuthenticationValues,Fusion.Photon.Realtime.AppSettings,System.Nullable{System.Boolean})">
             <summary>
             Connect the local peer to Photon Cloud using an async process.
             </summary>
             <param name="authentication">Custom Authentication Values used to Auth the local peer</param>
             <param name="customAppSettings">Custom Photon App Settings</param>
+            <param name="useDefaultCloudPorts">Signal if the LoadBalancingClient should use the Default or Alternative Ports</param>
             <returns>Async Task of the connect to Photon Cloud process. Can be used to wait for the process to be finished</returns>
         </member>
         <member name="M:Fusion.CloudServices.JoinSessionLobby(Fusion.SessionLobby,System.String,Fusion.Photon.Realtime.LobbyType)">
@@ -1793,10 +1794,20 @@
             Only used when <see cref="F:Fusion.NetworkProjectConfig.PhysicsEngines.Physics2D"/> == true.
             </summary>
         </member>
+        <member name="P:Fusion.NetworkPhysicsSimulation2D.PhysicsSimulationDeltaTime">
+            <summary>
+            Delta-time used to update the physics simulation. By default, set to be the <see cref="P:Fusion.Simulation.DeltaTime">simulation delta-time</see>.
+            </summary>
+        </member>
         <member name="T:Fusion.NetworkPhysicsSimulation3D">
             <summary>
             Fusion component for handling Physics.SyncTransforms() and Physics.Simulate(). 
             Only used when <see cref="F:Fusion.NetworkProjectConfig.PhysicsEngines.Physics3D"/> == true.
+            </summary>
+        </member>
+        <member name="P:Fusion.NetworkPhysicsSimulation3D.PhysicsSimulationDeltaTime">
+            <summary>
+            Delta-time used to update the physics simulation. By default, set to be the <see cref="P:Fusion.Simulation.DeltaTime">simulation delta-time</see>.
             </summary>
         </member>
         <member name="T:Fusion.OrderAttribute">
@@ -1849,6 +1860,11 @@
             This sorting class is meant to be released and garbage collected after use.
             </summary>
         </member>
+        <member name="M:Fusion.OrderSorter.RunConversion(System.Collections.Generic.List{System.Type})">
+            <summary>
+            Orders a list of types based on SortOrder attributes and returns an array of OrderNode structs.
+            </summary>
+        </member>
         <member name="M:Fusion.OrderSorter.Run">
             <summary>
             Returns sorted list of Types.
@@ -1860,7 +1876,7 @@
             Locate all SimulationBehaviours, and add them to this system.
             </summary>
         </member>
-        <member name="M:Fusion.OrderSorter.AlphabetizeTypes">
+        <member name="M:Fusion.OrderSorter.AlphabetizeTypes(System.Collections.Generic.List{System.Type})">
             <summary>
             Alphabetize the initial list to create determinism in all following steps.
             </summary>
@@ -1870,7 +1886,7 @@
             Create the node without searching for attributes yet.
             </summary>
         </member>
-        <member name="M:Fusion.OrderSorter.MergeChains">
+        <member name="M:Fusion.OrderSorter.MergeChains(System.Collections.Generic.List{Fusion.OrderNode})">
             <summary>
             Merge Before and Afters based on the logic: If A is Before B, and B is Before C, then A is Before C... etc
             This allows obvious conflicts to be quickly spotted.
@@ -6510,6 +6526,11 @@
             <param name="sources">The legal <see cref="T:Fusion.RpcSources"/> types that can trigger this Rpc. Default is <see cref="F:Fusion.RpcSources.All"/></param>
             <param name="targets">The <see cref="T:Fusion.RpcTargets"/> types that will receive and invoke this method. Default is <see cref="F:Fusion.RpcTargets.All"/></param>
         </member>
+        <member name="F:Fusion.RpcAttribute.MaxPayloadSize">
+            <summary>
+            Maximum allowed size for the payload of the RPC message.
+            </summary>
+        </member>
         <member name="F:Fusion.RpcChannel.Reliable">
             <summary>
             Rpc order preserved, delivery verified, resend in case of a failed delivery. 
@@ -6582,9 +6603,14 @@
             Not invoked because target player is local and this <see cref="T:Fusion.NetworkObject"/> current authority does not match flags set in <see cref="P:Fusion.RpcAttribute.Targets"/>
             </summary>
         </member>
-        <member name="F:Fusion.RpcLocalInvokeResult.TagetPlayerIsNotLocal">
+        <member name="F:Fusion.RpcLocalInvokeResult.TargetPlayerIsNotLocal">
             <summary>
             Not invoked because target player is not local.
+            </summary>
+        </member>
+        <member name="F:Fusion.RpcLocalInvokeResult.PayloadSizeExceeded">
+            <summary>
+            RPC is too large. See <see cref="F:Fusion.RpcAttribute.MaxPayloadSize"/> for the maximum allowed size.
             </summary>
         </member>
         <member name="T:Fusion.RpcSendCullResult">
@@ -6621,6 +6647,11 @@
         <member name="F:Fusion.RpcSendCullResult.TargetPlayerIsLocalButRpcIsNotInvokableLocally">
             <summary>
             Send culled because target player is local and <see cref="P:Fusion.RpcAttribute.InvokeLocal"/> is false.
+            </summary>
+        </member>
+        <member name="F:Fusion.RpcSendCullResult.PayloadSizeExceeded">
+            <summary>
+            RPC message size is too large to be sent. See <see cref="F:Fusion.RpcAttribute.MaxPayloadSize"/> for the maximum allowed size.
             </summary>
         </member>
         <member name="T:Fusion.RpcSendResult">
@@ -7868,17 +7899,18 @@
             Responsible to manage the Photon Cloud related Services
             </summary>
         </member>
-        <member name="M:Fusion.NetworkRunner.JoinSessionLobby(Fusion.SessionLobby,System.String,Fusion.Photon.Realtime.AuthenticationValues,Fusion.Photon.Realtime.AppSettings)">
+        <member name="M:Fusion.NetworkRunner.JoinSessionLobby(Fusion.SessionLobby,System.String,Fusion.Photon.Realtime.AuthenticationValues,Fusion.Photon.Realtime.AppSettings,System.Nullable{System.Boolean})">
             <summary>
             Join the Peer to a specific Lobby, either a prebuild or a custom one.
             
             More about matchmaking:
-            https://doc.photonengine.com/en-us/fusion/current/manual/matchmaking
+            https://doc.photonengine.com/fusion/v1/manual/matchmaking
             </summary>
             <param name="sessionLobby">Lobby Type to Join</param>
             <param name="lobbyID">Lobby ID</param>
             <param name="authentication">Authentication Values used to authenticate this peer</param>
             <param name="customAppSettings">Custom Photon Application Settings</param>
+            <param name="useDefaultCloudPorts">Signal if the LoadBalancingClient should use the Default or Alternative Ports</param>
             <returns>Async Task to Join a Session Lobby. Can be used to wait for the process to be finished.</returns>
         </member>
         <member name="M:Fusion.NetworkRunner.StartGame(Fusion.StartGameArgs)">
@@ -7886,18 +7918,19 @@
             Starts the local Fusion Runner and takes care of all major setup necessary
             
             More about matchmaking:
-            https://doc.photonengine.com/en-us/fusion/current/manual/matchmaking
+            https://doc.photonengine.com/fusion/v1/manual/matchmaking
             </summary>
             <param name="args">Custom arguments used to setup the Fusion Simulation</param>
             <returns>Task that can be awaited to chain actions</returns>
         </member>
-        <member name="M:Fusion.NetworkRunner.ConnectToCloud(Fusion.Photon.Realtime.AuthenticationValues,Fusion.Photon.Realtime.AppSettings,Fusion.CloudCommunicator)">
+        <member name="M:Fusion.NetworkRunner.ConnectToCloud(Fusion.Photon.Realtime.AuthenticationValues,Fusion.Photon.Realtime.AppSettings,Fusion.CloudCommunicator,System.Nullable{System.Boolean})">
             <summary>
             Connect the local peer to Photon Cloud using an async process.
             </summary>
             <param name="authentication">Authentication Values used to authenticate this peer</param>
             <param name="customAppSettings">Custom Photon Application Settings</param>
             <param name="externalCommunicator">External Communicator that will be reused on restart</param>
+            <param name="useDefaultCloudPorts">Signal if the LoadBalancingClient should use the Default or Alternative Ports</param>
             <returns>Async Task of the connect to Photon Cloud process. Can be used to wait for the process to be finished.</returns>
         </member>
         <member name="M:Fusion.NetworkRunner.DisconnectFromCloud">
@@ -7922,7 +7955,7 @@
             <param name="args">Initialization Arguments</param>
             <returns>A running Task of the initialization process</returns>
         </member>
-        <member name="M:Fusion.NetworkRunner.ShutdownWithException(System.Exception)">
+        <member name="M:Fusion.NetworkRunner.ShutdownAndBuildResult(System.Exception)">
             <summary>
             Shutdown the Fusion Runner based on a arbitrary Exception
             </summary>
@@ -8073,7 +8106,7 @@
             Fusion Start Arguments, used to configure the simulation mode and other settings
             
             More about matchmaking:
-            https://doc.photonengine.com/en-us/fusion/current/manual/matchmaking
+            https://doc.photonengine.com/fusion/v1/manual/matchmaking
             </summary>
         </member>
         <member name="F:Fusion.StartGameArgs.GameMode">
@@ -8200,6 +8233,16 @@
             For more information, check <see cref="T:Fusion.Photon.Realtime.MatchmakingMode"/>
             
             Default: <see cref="F:Fusion.Photon.Realtime.MatchmakingMode.FillRoom"/>
+            </summary>
+        </member>
+        <member name="F:Fusion.StartGameArgs.UseDefaultPhotonCloudPorts">
+            <summary>
+            Signal if the internal Realtime Client should use the Default Photon ports to connect to the Photon Cloud.
+            By default, Fusion uses ports: 27000, 27001 and 27002.
+            Set this to True to use ports: 5058, 5055 and 5056.
+            <seealso cref="!:https://doc.photonengine.com/fusion/current/connection-and-authentication/tcp-and-udp-port-numbers"/>
+            
+            Default: false (uses ports 27000, 27001 and 27002)
             </summary>
         </member>
         <member name="F:Fusion.StartGameArgs.CustomLobbyName">
@@ -8450,6 +8493,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Fusion.StartGameResult.BuildStartGameResultFromException(System.Exception)">
+            <summary>
+            Convert arbitrary Exceptions into a StartGameException to public use
+            </summary>
+            <param name="e">Exception to be converted</param>
+            <returns>Reference to a StartGameException holding a ShutdownReason</returns>
+        </member>
         <member name="T:Fusion.StartGameException">
             <summary>
             Describe an Exception that Occurred while starting the Fusion Simulation
@@ -8464,13 +8514,6 @@
             <summary>
             StartGameException to String
             </summary>
-        </member>
-        <member name="M:Fusion.StartGameException.Convert(System.Exception)">
-            <summary>
-            Convert arbitrary Exceptions into a StartGameException to public use
-            </summary>
-            <param name="e">Exception to be converted</param>
-            <returns>Reference to a StartGameException holding a ShutdownReason</returns>
         </member>
         <member name="T:Fusion.NetworkRunnerCallbackArgs">
             <summary>
@@ -9150,6 +9193,11 @@
             Returns (<see cref="F:Fusion.SimulationConfig.ClientPacketInterval"/> * <see cref="P:Fusion.SimulationConfig.DeltaTime"/>). This is the effective time interval (in seconds) between client input/state updates from the client.
             </summary>
         </member>
+        <member name="F:Fusion.SimulationConfig.EnableHalfNetworkTick">
+            <summary>
+            Enable Half Network Tick
+            </summary>
+        </member>
         <member name="M:Fusion.SimulationConfig.Init(System.Nullable{System.Int32},System.Nullable{System.Int32})">
             <summary>
             
@@ -9430,6 +9478,11 @@
             <param name="sim">Simulation to get the Memory from</param>
             <param name="capacityInBytes">Size in bytes of the new <see cref="T:Fusion.SimulationMessage"/></param>
             <returns></returns>
+        </member>
+        <member name="M:Fusion.SimulationMessage.CanAllocateUserPayload(System.Int32)">
+            <summary>
+            Checks if a message with given size can be allocated.
+            </summary>
         </member>
         <member name="T:Fusion.SimulationModes">
             <summary>
